@@ -7,6 +7,9 @@ var map = L.map( 'map', {
     zoom: 12
 });
 
+// list of all markers
+var markers = [];
+
 // get layers from gmaps
 var googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
     maxZoom: 20,
@@ -91,8 +94,32 @@ function store_point(data){
 
 function add_marker(e){
     // mark
-    L.marker([e.latlng['lat'], e.latlng['lng']]).addTo(map);
+    m = L.marker([e.latlng['lat'], e.latlng['lng']])
+    m.addTo(map);
+    markers.push(m);
+    console.log(markers);
     // update list
     var infopos = "<li>"+ e.latlng +"</li>";
     document.getElementById("list").innerHTML += infopos;
+}
+
+function dropAllPoints(){
+    // clean list
+    document.getElementById("list").innerHTML = "";
+    // remove all markers
+    for (var i = 0; i < markers.length; i++){
+        map.removeLayer(markers[i]);
+    }
+    // send ajax request to drop all markers inside db
+    request = dropAllPointsServerSide();
+    request.done(function (response, textStatus, jqXHR){
+        console.log("Yay \\o/, all points dropped!");
+    });
+}
+
+function dropAllPointsServerSide(){
+    return $.ajax({
+        url: "reset/",
+        type: "post",
+    });
 }

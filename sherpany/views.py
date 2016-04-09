@@ -31,3 +31,15 @@ def store(request):
     else:
         json_data.append({'error': "You're the lying type, I can just tell."})
     return JsonResponse(data=json_data, safe=False)
+
+
+def reset(request):
+    """ delete all points"""
+    json_data = []
+    if request.method == "POST" and request.is_ajax():
+        for p in Point.objects.all():
+            p.delete()
+        # use a celery task to drop all point iside the fusion table
+    else:
+        json_data.append({'error': "You're the lying type, I can just tell."})
+    return JsonResponse(data=json_data, safe=False)
